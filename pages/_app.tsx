@@ -7,7 +7,7 @@ import {CacheProvider, EmotionCache} from '@emotion/react';
 import themeCreator from '../src/themeCreator';
 import createEmotionCache from '../src/createEmotionCache';
 import {useMediaQuery} from "@mui/material";
-import ContainerDrawer from "../src/ContainerDrawer";
+import ContainerDrawer from "../components/ContainerDrawer";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 
