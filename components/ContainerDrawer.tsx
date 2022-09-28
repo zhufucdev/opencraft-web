@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {getI8n, LocalizationPartial} from "../src/std/localization";
-import window from "../src/std/window";
+import {getI8n, LocalizationPartial} from "../lib/std/localization";
+import window from "../lib/std/window";
 import Link from "./Link";
 
 import AboutIcon from "@mui/icons-material/Info";

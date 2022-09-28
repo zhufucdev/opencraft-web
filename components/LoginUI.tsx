@@ -1,4 +1,4 @@
-import {getI8n, LocalizationPartial} from "../src/std/localization";
+import {getI8n, LocalizationPartial} from "../lib/std/localization";
 import {useState} from "react";
 import Typography from "@mui/material/Typography";
 import {
