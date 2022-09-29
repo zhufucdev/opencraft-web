@@ -12,5 +12,5 @@ export default function useUser(shouldRedirect: boolean = true) {
         Router.push('/');
     }, [user]);
 
-    return { user, mutateUser };
+    return {user, mutateUser};
 }

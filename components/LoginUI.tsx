@@ -1,4 +1,4 @@
-import {getI8n, LocalizationPartial} from "../lib/std/localization";
+import {getI18n, LocalizationPartial} from "../lib/std/localization";
 import {useState} from "react";
 import Typography from "@mui/material/Typography";
 import {
@@ -42,7 +42,7 @@ const loginLocalized: LocalizationPartial = {
 };
 
 export default function LoginUI() {
-    const i18n = getI8n(loginLocalized);
+    const i18n = getI18n(loginLocalized);
     const [showPwd, setShowPwd] = useState(false);
     const [form] = useState({id: '', pwd: ''});
     const {mutateUser} = useUser();

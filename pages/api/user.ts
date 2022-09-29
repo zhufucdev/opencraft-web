@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {withIronSessionApiRoute} from "iron-session/next/index";
+import {withIronSessionApiRoute} from "iron-session/next";
 import {sessionOptions} from "../../lib/session";
 import {requireToken} from "../../lib/std/requireToken";
 

@@ -1,4 +1,4 @@
-const apiUrl = process.env.API_URL;
+export const apiUrl = process.env.API_URL;
 const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'

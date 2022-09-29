@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {getI8n, LocalizationPartial} from "../lib/std/localization";
+import {getI18n, LocalizationPartial} from "../lib/std/localization";
 import window from "../lib/std/window";
 import Link from "./Link";
 
@@ -40,7 +40,7 @@ export const navLocalized: LocalizationPartial = {
 export default function ContainerDrawer(props: { children: React.ReactElement }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
-    const i8n = getI8n(navLocalized);
+    const i8n = getI18n(navLocalized);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);

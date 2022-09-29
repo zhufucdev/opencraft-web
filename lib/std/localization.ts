@@ -43,7 +43,7 @@ export function getString(base: string, ...args: string[]): string {
 
 export const defaultLocale = "zh-CN";
 
-export function getI8n(parial: LocalizationPartial): LocalizationStrings {
+export function getI18n(partial: LocalizationPartial): LocalizationStrings {
     const {locale} = useRouter();
-    return parial[locale ?? defaultLocale];
+    return partial[locale ?? defaultLocale];
 }
