@@ -18,6 +18,9 @@ import Link from "./Link";
 import {navigation} from "./ContainerDrawer";
 import ContinueIcon from "@mui/icons-material/ArrowForward";
 import * as React from "react";
+import useUser from "../lib/useUser";
+import {localApiFetch} from "../lib/std/apiFetch";
+import {LoggedInUser, User} from "../pages/api/user";
 
 const loginLocalized: LocalizationPartial = {
     "zh-CN": {
@@ -36,14 +39,24 @@ const loginLocalized: LocalizationPartial = {
         "action-register": "Register",
         "action-learn": "So what's OpenCraft?"
     }
-}
+};
 
 export default function LoginUI() {
     const i18n = getI8n(loginLocalized);
     const [showPwd, setShowPwd] = useState(false);
+    const [form] = useState({id: '', pwd: ''});
+    const {mutateUser} = useUser();
 
     function handleVisibilityClick() {
         setShowPwd(!showPwd);
+    }
+
+    async function handleSubmit() {
+        mutateUser(
+            await (await localApiFetch('login', {
+                id: form.id, pwd: form.pwd
+            })).json() as User
+        );
     }
 
     return (
@@ -56,13 +69,14 @@ export default function LoginUI() {
                     <FormControl fullWidth variant="filled"
                                  sx={{marginBottom: 2}}>
                         <InputLabel htmlFor="username-input">{i18n["title-username"]}</InputLabel>
-                        <FilledInput id="username-input"/>
+                        <FilledInput id="username-input" value={form.id}/>
                     </FormControl>
                     <FormControl fullWidth variant="filled">
                         <InputLabel htmlFor="pwd-input">{i18n["title-password"]}</InputLabel>
                         <FilledInput
                             id="pwd-input"
                             type={showPwd ? 'text' : 'password'}
+                            value={form.pwd}
                             endAdornment={
                                 <InputAdornment
                                     position="end"
@@ -82,7 +96,7 @@ export default function LoginUI() {
                     <Button component={Link} href={navigation["about"].path}>{i18n["action-learn"]}</Button>
                     <div style={{marginLeft: "auto"}}>
                         <Tooltip title={i18n["action-login"]}>
-                            <IconButton>
+                            <IconButton onClick={handleSubmit}>
                                 <ContinueIcon/>
                             </IconButton>
                         </Tooltip>

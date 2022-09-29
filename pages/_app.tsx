@@ -9,7 +9,6 @@ import createEmotionCache from '../lib/createEmotionCache';
 import {useMediaQuery} from "@mui/material";
 import ContainerDrawer from "../components/ContainerDrawer";
 import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

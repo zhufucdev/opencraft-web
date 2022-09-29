@@ -2,6 +2,8 @@
 
 Web branch of [the OpenCraft Project](https://github.com/zhufucdev/OpenCraftProject).
 
+Access the site at [https://mc.zhufucdev.com](https://mc.zhufucdev.com)
+
 # Getting Started
 
 ```bash
