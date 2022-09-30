@@ -20,9 +20,15 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
     }
     const result = (await apiRes.json()) as LoginResult;
     if (result.success) {
-        req.session.user = result.user!!;
+        const instance: LoggedInUser = {
+            ...result.user!!,
+            isLoggedIn: true
+        }
+        req.session.user = instance;
         await req.session.save();
-        return result.user;
+        res.json(instance);
+    } else {
+        res.status(401).send("Login failed")
     }
 }
 

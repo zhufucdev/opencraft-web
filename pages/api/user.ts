@@ -13,7 +13,8 @@ export interface LoggedInUser extends User {
 }
 
 async function userRouter(req: NextApiRequest, res: NextApiResponse<User>) {
-    if (req.session.user && req.session.token) {
+    await requireToken(req);
+    if (req.session.user) {
         res.json(req.session.user);
     } else {
         req.session.user = {
@@ -22,7 +23,6 @@ async function userRouter(req: NextApiRequest, res: NextApiResponse<User>) {
         await req.session.save();
         res.json(req.session.user);
     }
-    await requireToken(req);
 }
 
 export default withIronSessionApiRoute(userRouter, sessionOptions);

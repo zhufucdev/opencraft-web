@@ -1,5 +1,5 @@
 import {getI18n, LocalizationPartial} from "../lib/std/localization";
-import {useState} from "react";
+import {ChangeEvent, useState} from "react";
 import Typography from "@mui/material/Typography";
 import {
     Button,
@@ -14,13 +14,16 @@ import {
 } from "@mui/material";
 import VisibilityOn from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Link from "./Link";
-import {navigation} from "./ContainerDrawer";
+import Link from "../components/Link";
+import {navigation} from "../components/ContainerDrawer";
 import ContinueIcon from "@mui/icons-material/ArrowForward";
 import * as React from "react";
 import useUser from "../lib/useUser";
 import {localApiFetch} from "../lib/std/apiFetch";
-import {LoggedInUser, User} from "../pages/api/user";
+import {LoggedInUser, User} from "./api/user";
+import {NextPage} from "next";
+import Copyright from "../components/Copyright";
+import Router from "next/router";
 
 const loginLocalized: LocalizationPartial = {
     "zh-CN": {
@@ -41,10 +44,10 @@ const loginLocalized: LocalizationPartial = {
     }
 };
 
-export default function LoginUI() {
+const LoginPage: NextPage = () => {
     const i18n = getI18n(loginLocalized);
     const [showPwd, setShowPwd] = useState(false);
-    const [form] = useState({id: '', pwd: ''});
+    const [form, setForm] = useState({id: '', pwd: ''});
     const {mutateUser} = useUser();
 
     function handleVisibilityClick() {
@@ -52,11 +55,12 @@ export default function LoginUI() {
     }
 
     async function handleSubmit() {
-        mutateUser(
+        await mutateUser(
             await (await localApiFetch('login', {
                 id: form.id, pwd: form.pwd
             })).json() as User
         );
+        Router.push('/')
     }
 
     return (
@@ -69,7 +73,8 @@ export default function LoginUI() {
                     <FormControl fullWidth variant="filled"
                                  sx={{marginBottom: 2}}>
                         <InputLabel htmlFor="username-input">{i18n["title-username"]}</InputLabel>
-                        <FilledInput id="username-input" value={form.id}/>
+                        <FilledInput id="username-input" value={form.id}
+                                     onChange={(ev) => setForm({...form, id: ev.target.value})}/>
                     </FormControl>
                     <FormControl fullWidth variant="filled">
                         <InputLabel htmlFor="pwd-input">{i18n["title-password"]}</InputLabel>
@@ -77,6 +82,8 @@ export default function LoginUI() {
                             id="pwd-input"
                             type={showPwd ? 'text' : 'password'}
                             value={form.pwd}
+                            onChange={(ev) => setForm({...form, pwd: ev.target.value})}
+                            onKeyDown={(ev) => {if (ev.key == 'Enter') handleSubmit()}}
                             endAdornment={
                                 <InputAdornment
                                     position="end"
@@ -103,6 +110,10 @@ export default function LoginUI() {
                     </div>
                 </CardActions>
             </Card>
+
+            <Copyright/>
         </>
     );
 }
+
+export default LoginPage;

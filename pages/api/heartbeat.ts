@@ -9,7 +9,7 @@ export interface Heartbeat {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Heartbeat>) {
     let alive;
     try {
-        const f = await fetch(apiUrl + '/heartbeat');
+        const f = await fetch(apiUrl + '/heartbeat'); // This fetch needs no error reporting
         alive = f.ok;
     } catch (e) {
         alive = false;
