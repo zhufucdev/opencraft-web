@@ -72,7 +72,7 @@ function forReCAPTCHA(code?: string) {
     }
 }
 
-export default function LoginUI(props: {reCaptchaKey: string}) {
+export default function LoginUI(props: { reCaptchaKey: string }) {
     const {locale} = useRouter();
     const i18n = getI18n(loginLocalized);
     const [showPwd, setShowPwd] = useState(false);
@@ -88,12 +88,13 @@ export default function LoginUI(props: {reCaptchaKey: string}) {
         setShowPwd(!showPwd);
     }
 
-    const usernameVerify = /[a-zA-Z0-9_]{3,15}/;
+    const usernameVerify = /[a-zA-Z0-9_]{3,15}/g;
+
     async function handleSubmit() {
         if (!form.id
-            || !form.id.match(usernameVerify)
+            || !(usernameVerify.test(form.id))
             || !form.pwd
-            || (registering && !form.repeat || form.repeat !== form.pwd)) {
+            || registering && (!form.repeat || form.repeat !== form.pwd)) {
             return;
         }
 
@@ -153,6 +154,9 @@ export default function LoginUI(props: {reCaptchaKey: string}) {
         setForm({...form, id});
         if (!id) {
             setError('empty');
+            setQuery('user');
+        } else if (!usernameVerify.test(id)) {
+            setError('invalid')
             setQuery('user');
         } else {
             idleQuery();
