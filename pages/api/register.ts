@@ -1,24 +1,25 @@
 import {NextApiRequest, NextApiResponse} from "next";
+import {requireToken} from "../../lib/std/requireToken";
+import {apiFetch} from "../../lib/std/apiFetch";
+import {LoggedInUser} from "./user";
 import {withIronSessionApiRoute} from "iron-session/next";
 import {sessionOptions} from "../../lib/session";
-import {LoggedInUser} from "./user";
-import {apiFetch} from "../../lib/std/apiFetch";
-import {requireToken} from "../../lib/std/requireToken";
 
-interface LoginResult {
+interface RegisterResult {
     success: boolean,
     user?: LoggedInUser
 }
 
-async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-    const {id, pwd} = req.body;
+async function registerRoute(req: NextApiRequest, res: NextApiResponse) {
+    const {id, pwd, token: captchaToken} = req.body;
     const token = await requireToken(req);
-    const apiRes = await apiFetch('login', {id, pwd, token});
+
+    const apiRes = await apiFetch('register', {id, pwd, token, captchaToken});
     if (!apiRes.ok) {
         res.status(apiRes.status).send(apiRes.text());
         return;
     }
-    const result = (await apiRes.json()) as LoginResult;
+    const result = (await apiRes.json()) as RegisterResult;
     if (result.success) {
         const instance: LoggedInUser = {
             ...result.user!!,
@@ -28,8 +29,8 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
         await req.session.save();
         res.json(instance);
     } else {
-        res.status(401).send("Login failed");
+        res.status(401).send("User duplicated.");
     }
 }
 
-export default withIronSessionApiRoute(loginRoute, sessionOptions);
+export default withIronSessionApiRoute(registerRoute, sessionOptions);

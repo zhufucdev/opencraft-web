@@ -12,12 +12,12 @@ function HomeContent(props: { user: LoggedInUser }) {
     const {user} = props;
     return (
         <>
-            <Typography variant="h1">{"Logged in as " + user.id}</Typography>
+            <Typography variant="h1">Logged in as {user.id}</Typography>
         </>
     );
 }
 
-const Home: NextPage = () => {
+const Home: NextPage<any> = ({reCaptchaKey}) => {
     const {heartbeat} = useServer();
     const {user} = useUser();
     return (
@@ -25,11 +25,18 @@ const Home: NextPage = () => {
             {
                 heartbeat?.alive === false ?
                     <ApiUnavailable/>
-                    : (user?.isLoggedIn === true ? <HomeContent user={user as LoggedInUser}/> : <LoginUI/>)
+                    : (user?.isLoggedIn === true
+                        ? <HomeContent user={user as LoggedInUser}/>
+                        : <LoginUI reCaptchaKey={reCaptchaKey}/>)
             }
             <Copyright/>
         </>
     )
 };
+
+export async function getServerSideProps() {
+    const reCaptchaKey = process.env.RECAPTCHA_KEY as string;
+    return {props: {reCaptchaKey}};
+}
 
 export default Home;

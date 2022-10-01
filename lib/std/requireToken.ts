@@ -6,15 +6,17 @@ export interface Token {
     spoil: Date
 }
 
-export async function requireToken(req: NextApiRequest) {
+export async function requireToken(req: NextApiRequest): Promise<string> {
     if (req.session.token && new Date() < req.session.token.spoil) {
-        return
+        return req.session.token.token;
     }
-    const res = await apiFetch('token_acquire');
+    const res = await apiFetch('token_acquire', {remote: req.socket.remoteAddress});
     const result = await res.json() as any;
-    req.session.token = {
+    const newToken = {
         token: result.token,
         spoil: new Date(result.spoil)
     };
+    req.session.token = newToken;
     await req.session.save();
+    return newToken.token;
 }
