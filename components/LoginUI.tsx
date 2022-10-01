@@ -14,15 +14,15 @@ import {
 } from "@mui/material";
 import VisibilityOn from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Link from "../components/Link";
-import {navigation} from "../components/ContainerDrawer";
+import Link from "./Link";
+import {navigation} from "./ContainerDrawer";
 import ContinueIcon from "@mui/icons-material/ArrowForward";
 import * as React from "react";
 import useUser from "../lib/useUser";
 import {localApiFetch} from "../lib/std/apiFetch";
-import {LoggedInUser, User} from "./api/user";
+import {LoggedInUser, User} from "../pages/api/user";
 import {NextPage} from "next";
-import Copyright from "../components/Copyright";
+import Copyright from "./Copyright";
 import Router from "next/router";
 
 const loginLocalized: LocalizationPartial = {
@@ -44,7 +44,7 @@ const loginLocalized: LocalizationPartial = {
     }
 };
 
-const LoginPage: NextPage = () => {
+export default function LoginUI() {
     const i18n = getI18n(loginLocalized);
     const [showPwd, setShowPwd] = useState(false);
     const [form, setForm] = useState({id: '', pwd: ''});
@@ -60,7 +60,6 @@ const LoginPage: NextPage = () => {
                 id: form.id, pwd: form.pwd
             })).json() as User
         );
-        Router.push('/')
     }
 
     return (
@@ -110,10 +109,6 @@ const LoginPage: NextPage = () => {
                     </div>
                 </CardActions>
             </Card>
-
-            <Copyright/>
         </>
     );
 }
-
-export default LoginPage;

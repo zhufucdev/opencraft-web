@@ -12,8 +12,7 @@ export default function useUser(shouldRedirect: boolean = true) {
     const {data: user, mutate: mutateUser} = useSWR<User>('/api/user', userFetcher);
     useEffect(() => {
         if (!shouldRedirect || user && user.isLoggedIn) return;
-
-        Router.push('/login');
+        Router.push('/');
     }, [user, shouldRedirect]);
 
     return {user, mutateUser};

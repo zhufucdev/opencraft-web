@@ -1,8 +1,9 @@
 import {Heartbeat} from "../pages/api/heartbeat";
 import useSWR from "swr";
+import {localApiFetch} from "./std/apiFetch";
 
 async function heartbeatFetcher(): Promise<Heartbeat> {
-    return (await fetch('/api/heartbeat')).json()
+    return (await localApiFetch('heartbeat')).json()
 }
 
 export default function useServer() {
