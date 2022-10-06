@@ -10,6 +10,8 @@ export interface User {
 export interface LoggedInUser extends User {
     id: string,
     uuid: string,
+    nickname?: string,
+    avatar?: string
 }
 
 async function userRouter(req: NextApiRequest, res: NextApiResponse<User>) {

@@ -1,25 +1,32 @@
-import React from "react";
+import React, {useCallback, useEffect} from "react";
 import {
-    AppBar, CssBaseline,
+    AppBar, Avatar, Button, CssBaseline,
     Divider, Drawer,
     IconButton,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
-    ListItemText,
-    Toolbar
+    ListItemText, Popover,
+    Toolbar, Tooltip
 } from "@mui/material";
 import Box from "@mui/material/Box";
+import Link from "./Link";
 import Typography from "@mui/material/Typography";
 import {getI18n, LocalizationPartial} from "../lib/std/localization";
 import window from "../lib/std/window";
-import Link from "./Link";
+import useUser from "../lib/useUser";
+import {primaryColor} from "../lib/themeCreator";
+import {LoggedInUser} from "../pages/api/user";
 
 import AboutIcon from "@mui/icons-material/Info";
 import HomeIcon from "@mui/icons-material/Home";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import MenuIcon from '@mui/icons-material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
+import {useRouter} from "next/router";
+import {localApiFetch} from "../lib/std/apiFetch";
 
 const drawerWidth = 200;
 export const navLocalized: LocalizationPartial = {
@@ -27,24 +34,46 @@ export const navLocalized: LocalizationPartial = {
         "about": "关于",
         "home": "主页",
         "user": "用户",
-        "statics": "统计"
+        "statics": "统计",
+        "action-login": "登录",
+        "action-logout": "登出",
+        "action-settings": "设置"
     },
     "en-US": {
         "about": "About",
         "home": "Home",
         "user": "User",
-        "statics": "Statics"
+        "statics": "Statics",
+        "action-login": "Login",
+        "action-logout": "Logout",
+        "action-settings": "Settings"
     }
 }
 
 export default function ContainerDrawer(props: { children: React.ReactElement }) {
+    const router = useRouter();
+    const {user, mutateUser} = useUser(false);
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [anchorEle, setAnchorEle] = React.useState<HTMLElement | null>(null);
 
-    const i8n = getI18n(navLocalized);
-
+    const i18n = getI18n(navLocalized);
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
+
     };
+    const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEle(event.currentTarget);
+
+    }
+
+    const handleClose = () => setAnchorEle(null);
+
+    const handleLogout = async () => {
+        handleClose();
+        await mutateUser(
+            await (await localApiFetch('logout')).json()
+        )
+    }
 
     const drawer = (
         <div>
@@ -53,18 +82,20 @@ export default function ContainerDrawer(props: { children: React.ReactElement })
             <List>
                 {Object.entries(navigation).filter(([_, v]) => v.inDrawer).map(([name, entry]) => (
                     <ListItem key={name} disablePadding>
-                        <ListItemButton component={Link} href={entry.path} onClick={handleDrawerToggle}>
+                        <ListItemButton component={Link}
+                                        href={entry.path}
+                                        selected={entry.path === router.pathname}
+                                        onClick={handleDrawerToggle}>
                             <ListItemIcon>
                                 {entry.icon}
                             </ListItemIcon>
-                            <ListItemText primary={i8n[name]}/>
+                            <ListItemText primary={i18n[name]}/>
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
         </div>
     );
-
     const container = window() !== undefined ? () => window()!!.document.body : undefined;
 
     return (
@@ -87,9 +118,71 @@ export default function ContainerDrawer(props: { children: React.ReactElement })
                     >
                         <MenuIcon/>
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
+                    <Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
                         OpenCraft
                     </Typography>
+
+                    <Tooltip title={i18n["user"]}>
+                        {
+                            user?.isLoggedIn === true
+                                ? <IconButton
+                                    sx={{width: 32, height: 32}}
+                                    onClick={handleAvatarClick}>
+                                    <Avatar
+                                        src={(user as LoggedInUser).avatar}
+                                        sx={{width: 32, height: 32, bgcolor: primaryColor}}>
+                                        {(user as LoggedInUser).id.charAt(0).toUpperCase()}
+                                    </Avatar>
+                                </IconButton>
+                                : <Button
+                                    color="inherit"
+                                    component={Link}
+                                    href={navigation["home"].path}>
+                                    {i18n["action-login"]}
+                                </Button>
+                        }
+                    </Tooltip>
+
+                    <Popover
+                        open={anchorEle !== null}
+                        anchorEl={anchorEle}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right'
+                        }}
+                        sx={{
+                            marginTop: 1
+                        }}
+                    >
+                        {/* Popover menu for user related operations */}
+                        <List disablePadding>
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={handleLogout}>
+                                    <ListItemIcon>
+                                        <LogoutIcon/>
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        {i18n["action-logout"]}
+                                    </ListItemText>
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton>
+                                    <ListItemIcon>
+                                        <SettingsIcon/>
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        {i18n["action-settings"]}
+                                    </ListItemText>
+                                </ListItemButton>
+                            </ListItem>
+                        </List>
+                    </Popover>
                 </Toolbar>
             </AppBar>
             <Box
@@ -148,7 +241,7 @@ interface NavigationTable {
 export const navigation: NavigationTable = {
     "home": {
         path: "/",
-        icon: <HomeIcon />,
+        icon: <HomeIcon/>,
         inDrawer: true
     },
     "user": {
@@ -158,12 +251,12 @@ export const navigation: NavigationTable = {
     },
     "statics": {
         path: "/stat",
-        icon: <QueryStatsIcon />,
+        icon: <QueryStatsIcon/>,
         inDrawer: true
     },
     "about": {
         path: "/about",
-        icon: <AboutIcon />,
+        icon: <AboutIcon/>,
         inDrawer: true
     }
 };
